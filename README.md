@@ -361,14 +361,14 @@ Contributions, bug reports, and feature requests are welcome.
 Clone the repository, restore its dependencies, build the solution, and run the test suite:
 
 ```bash
-git clone https://github.com/bodde/Bodde.Query.git
-cd Bodde.Query
+git clone https://github.com/bodde/Bodde.Query.OData.git
+cd Bodde.Query.OData
 dotnet restore
 dotnet build
 dotnet test
 ```
 
-The solution contains the packages under `Bodde.Query.*`, automated tests under `Bodde.Query.*.Test`, and runnable examples under `Samples`.
+The solution contains the package under `Bodde.Query.OData`, automated tests under `Bodde.Query.OData.Test`, and runnable examples under `Samples`.
 
 ### Pull requests
 
@@ -382,6 +382,6 @@ When submitting a pull request:
 
 ## License
 
-Bodde.Query is released under the [MIT License](LICENSE).
+Bodde.Query.OData is released under the [MIT License](LICENSE).
 
 Copyright (c) 2026 Tomaso Donini.
