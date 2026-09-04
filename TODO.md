@@ -1,10 +1,3 @@
-# Rename repository and solution
-
-- [ ] Rename repository feasibility check
-- [ ] Rename solution
-- [ ] Rename Github repository
-
-
 # Nuget packages
 
 - [ ] Configure NuGet package
