@@ -314,10 +314,10 @@ The repository includes sample projects demonstrating different usage scenarios:
 
 | Sample | Description |
 | --- | --- |
-| [Samples.ConsoleApp](https://github.com/bodde/Bodde.Query/tree/main/Samples/Samples.ConsoleApp) | Runs queries in a console application without dependency injection. |
-| [Samples.ConsoleApp.EFCore](https://github.com/bodde/Bodde.Query/tree/main/Samples/Samples.ConsoleApp.EFCore) | Runs queries against an Entity Framework Core database. |
-| [Samples.AspNetCore.MinimalApi](https://github.com/bodde/Bodde.Query/tree/main/Samples/Samples.AspNetCore.MinimalApi) | Exposes employee queries through an ASP.NET Core Minimal API. |
-| [Samples.AspNetCore.Mvc](https://github.com/bodde/Bodde.Query/tree/main/Samples/Samples.AspNetCore.Mvc) | Exposes employee queries through an ASP.NET Core MVC API. |
+| [Samples.ConsoleApp](https://github.com/bodde/Bodde.Query.OData/tree/main/Samples/Samples.ConsoleApp) | Runs queries in a console application without dependency injection. |
+| [Samples.ConsoleApp.EFCore](https://github.com/bodde/Bodde.Query.OData/tree/main/Samples/Samples.ConsoleApp.EFCore) | Runs queries against an Entity Framework Core database. |
+| [Samples.AspNetCore.MinimalApi](https://github.com/bodde/Bodde.Query.OData/tree/main/Samples/Samples.AspNetCore.MinimalApi) | Exposes employee queries through an ASP.NET Core Minimal API. |
+| [Samples.AspNetCore.Mvc](https://github.com/bodde/Bodde.Query.OData/tree/main/Samples/Samples.AspNetCore.Mvc) | Exposes employee queries through an ASP.NET Core MVC API. |
 
 ## Limitations
 The filter parser has limited OData support, and each comparison must be binary. Use parentheses when composing complex criteria.
