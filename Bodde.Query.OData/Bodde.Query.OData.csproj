@@ -5,7 +5,32 @@
     <LangVersion>14.0</LangVersion>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+
+    <!-- NuGet configuration -->
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageId>Bodde.Query.OData</PackageId>
+    <Version>1.0.0</Version>
+    <Authors>Bodde</Authors>
+
+    <!-- Useful metadata -->
+    <Description>Provides reusable support for filtering, sorting, and paging IQueryable collections with OData syntax.</Description>
+    <PackageTags>odata;linq;efcore;dotnet</PackageTags>
+    <PackageIcon>bodde-icon-128.png</PackageIcon>
+
+    <!-- README -->
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+
+    <!-- GitHub link -->
+    <RepositoryUrl>https://github.com/bodde/Bodde.Query.OData.git</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageProjectUrl>https://github.com/bodde/Bodde.Query.OData.git</PackageProjectUrl>
+
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="../README.md" Pack="true" PackagePath="" />
+    <None Include="images/bodde-icon-128.png" Pack="true" PackagePath="" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Bodde.Common.Extensions" Version="1.1.0" />
