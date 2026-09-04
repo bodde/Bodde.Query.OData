@@ -1,7 +1,11 @@
 # Bodde.Query.OData
 
-Bodde.Query.OData is a NuGet package for building, parsing, formatting, and executing query criteria with OData syntax. 
-It provides reusable support for filtering, sorting, and paging `IQueryable<T>` data sources.  
+[![.NET Standard](https://img.shields.io/badge/.NET%20Standard-2.0-512BD4)](https://dotnet.microsoft.com/platform/dotnet-standard)
+[![Build](https://github.com/bodde/Bodde.Query.OData/actions/workflows/dotnet.yml/badge.svg)](https://github.com/bodde/Bodde.Query.OData/actions)
+[![Code coverage](https://img.shields.io/badge/code%20coverage-100%25-brightgreen)](https://github.com/bodde/Bodde.Query.OData/tree/main/Bodde.Query.OData.Test)
+
+
+Bodde.Query.OData provides reusable support for filtering, sorting, and paging `IQueryable<T>` collections with OData syntax. 
 It supports a lightweight partial, limited subset of OData query constructs, including `$filter`, `$orderby`, `$top`, `$skip`.  
 These constructs can describe queries without requiring a dependency on `Microsoft.OData` or the needing EDM models generation.
 
