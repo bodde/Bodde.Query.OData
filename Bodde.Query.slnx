@@ -1,0 +1,12 @@
+<Solution>
+  <Project Path="Bodde.Query.OData.Test/Bodde.Query.OData.Test.csproj" />
+  <Project Path="Bodde.Query.OData/Bodde.Query.OData.csproj" />
+  <Folder Name="/Samples/">
+    <Project Path="Samples/Samples.ConsoleApp/Samples.ConsoleApp.csproj" />
+    <Project Path="Samples/Samples.AspNetCore.MinimalApi/Samples.AspNetCore.MinimalApi.csproj" />
+    <Project Path="Samples/Samples.AspNetCore.Mvc/Samples.AspNetCore.Mvc.csproj" />
+    <Project Path="Samples/Samples.Common.EFCore/Samples.Common.EFCore.csproj" />
+    <Project Path="Samples/Samples.Common/Samples.Common.csproj" />
+    <Project Path="Samples/Samples.ConsoleApp.EFCore/Samples.ConsoleApp.EFCore.csproj" />
+  </Folder>
+</Solution>

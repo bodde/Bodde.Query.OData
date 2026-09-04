@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net8.0;net10.0</TargetFrameworks>
+    <LangVersion>14.0</LangVersion>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../../Bodde.Query.OData/Bodde.Query.OData.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Bodde.Common.Extensions" Version="1.1.0" />
+  </ItemGroup>
+
+</Project>
