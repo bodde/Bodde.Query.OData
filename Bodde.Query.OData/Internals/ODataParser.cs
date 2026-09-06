@@ -74,7 +74,7 @@ internal class ODataParser(IExpressionBuilder expressionBuilder) : IODataParser
                 filterString = ProcessNotExpressions(filterString, expressionsBag);
 
                 var innerExpressions = GetInnerLogicalExpressions(filterString);
-                if (innerExpressions.Length == 0)
+                if (innerExpressions.IsEmpty())
                     break;
 
                 filterString = ProcessInnerLogicalExpressions(filterString, innerExpressions, expressionsBag);
@@ -86,6 +86,7 @@ internal class ODataParser(IExpressionBuilder expressionBuilder) : IODataParser
         private static string ProcessNotExpressions(string filterString, Dictionary<string, FilterExpression> expressionsBag)
         {
             var notMatches = NotExpressionsRegex.Matches(filterString);
+            
             foreach (Match notMatch in notMatches)
             {
                 var notStatement = notMatch.Value;
@@ -118,12 +119,7 @@ internal class ODataParser(IExpressionBuilder expressionBuilder) : IODataParser
         }
 
         private static string[] GetInnerLogicalExpressions(string filterString)
-        {
-            return SurroundedByParenthesesRegex.Matches(filterString)
-                .Cast<Match>()
-                    .Select(m => m.Value)
-                    .ToArray();
-        }
+            => SurroundedByParenthesesRegex.GetMatchValues(filterString);
 
         private string ProcessInnerLogicalExpressions(
             string filterString,
@@ -188,23 +184,13 @@ internal class ODataParser(IExpressionBuilder expressionBuilder) : IODataParser
             return logicalExpression;
         }
         private string[] GetExpressionKeys(string expressionString)
-        {
-
-            var expressionKeys = ExpressionKeysRegex
-                .Matches(expressionString)
-                .Cast<Match>()
-                .Select(m => m.Value)
-                .ToArray();
-
-            return expressionKeys;
-        }
+            =>  ExpressionKeysRegex.GetMatchValues(expressionString);
 
         private LogicalOperator GetLogicalOperator(string filterString)
         {
             var logicalOperators = LogicalOperatorsRegex
-                .Matches(filterString)
-                .Cast<Match>()
-                .Select(m => m.Value.Trim().ToLower())
+                .GetMatchValues(filterString)
+                .Select(v => v.Trim().ToLower())
                 .ToArray();
 
             if (logicalOperators.Distinct().Count() > 1)
@@ -228,7 +214,7 @@ internal class ODataParser(IExpressionBuilder expressionBuilder) : IODataParser
 
         internal static ComparisonExpression CreateComparisonExpression(string comparisonStatement)
         {
-            var parts = ExpressionRegex.Matches(comparisonStatement.Trim()).Cast<Match>().Select(m => m.Value).ToArray();
+            var parts = ExpressionRegex.GetMatchValues(comparisonStatement.Trim());
 
             if (parts.Length != 3)
             {
@@ -252,12 +238,9 @@ internal class ODataParser(IExpressionBuilder expressionBuilder) : IODataParser
 
         public string[] GetComparisonStatements(string filterString)
         {
-            var comparisonStatements = ComparisonStatementsRegex
-                .Matches(filterString)
-                .Cast<Match>()
-                .Select(m => m.Value).ToArray();
+            var comparisonStatements = ComparisonStatementsRegex.GetMatchValues(filterString);
 
-            if (comparisonStatements.Length == 0)
+            if (comparisonStatements.IsEmpty())
             {
                 throw new FormatException("No valid comparison statements found in filter string.");
             }
