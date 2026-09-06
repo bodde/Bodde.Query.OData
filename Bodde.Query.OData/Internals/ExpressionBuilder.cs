@@ -205,8 +205,7 @@ internal class ExpressionBuilder() : IExpressionBuilder
 
             if (value is string stringValue)
             {
-                if (propertyType.IsEnum) return Enum.Parse(propertyType, stringValue);
-                if (propertyType == typeof(DateTimeOffset)) return DateTimeOffset.Parse(stringValue);
+                return stringValue.ConvertTo(propertyType);
             }
 
             var needsConversion = valueType != propertyType;
@@ -221,17 +220,16 @@ internal class ExpressionBuilder() : IExpressionBuilder
         internal static object GetInValues(Expression property, object value)
         {
             var valueType = value.GetType();
-            var elementType = valueType.GetElementType() ?? valueType.GetGenericArguments().FirstOrDefault();
-            if (elementType == null)
+            if(!valueType.IsCollection())
             {
                 throw new InvalidOperationException("Value for 'In' operator must be a collection.");
             }
 
-            var propertyType = property.Type;
-            if (elementType == propertyType)
+            var elementType = valueType.GetElementType() ?? valueType.GetGenericArguments().FirstOrDefault();
+            if (elementType == property.Type)
                 return value;
 
-            var listInstance = ConvertInValues(value, propertyType);
+            var listInstance = ConvertInValues(value, property.Type);
 
             return listInstance;
         }
