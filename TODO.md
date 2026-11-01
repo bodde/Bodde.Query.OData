@@ -1,11 +1,11 @@
 # Upgrade Bodde.Common.Extensions
-- [x] Upgrade to 1.2.0
-- [x] Use IsCollection into GetInValues
+- [x] Upgrade to 1.5.0
 
-# Upgrade Bodde.Common.Extensions
-- [x] Upgrade to 1.3.0
-- [x] Remove local RegexExtensions
-- [x] Use common RegexExtension
-- [x] Remove local StringExtensions
-- [x] Use common StringExtensions
+# Add select feature
+- [ ] ApplySelect extension method 
+- [ ] Add aliases to select clause
+- [ ] Add distinct to select clause
+
+# Clarify non-standard OData features
+- [ ] Add to README.md a paragraph with all non-standard OData features
 
