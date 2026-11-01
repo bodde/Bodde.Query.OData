@@ -9,12 +9,12 @@ internal class ExpressionBuilder() : IExpressionBuilder
 {
 
     public Expression<Func<T, object?>> BuildSelector<T>(string propertyPath)
-    {   
-        var parameter = Expression.Parameter(typeof(T));;
+    {
+        var parameter = Expression.Parameter(typeof(T)); ;
         var selectorBuilder = new SelectorBuilder<T>(parameter);
 
         return selectorBuilder.BuildExpression(propertyPath);
-    }  
+    }
 
     public Expression<Func<T, bool>> BuildPredicate<T>(FilterExpression filterExpression)
     {
@@ -22,6 +22,14 @@ internal class ExpressionBuilder() : IExpressionBuilder
         var predicateBuilder = new PredicateBuilder<T>(parameter);
 
         return predicateBuilder.BuildExpression(filterExpression);
+    }
+
+    public Expression<Func<T, dynamic>> BuildSelect<T>(SelectItem[] selectItems)
+    {
+        var parameter = Expression.Parameter(typeof(T));
+        var selectBuilder = new SelectorBuilder<T>(parameter);
+
+        return selectBuilder.BuildExpression(selectItems);
     }
 
     internal class SelectorBuilder<T>(ParameterExpression parameter)
@@ -32,6 +40,15 @@ internal class ExpressionBuilder() : IExpressionBuilder
             var converted = Expression.Convert(propertyPathExpression, typeof(object));
 
             return Expression.Lambda<Func<T, object?>>(converted, parameter);
+        }
+
+        internal Expression<Func<T, dynamic>> BuildExpression(SelectItem[] selectItems)
+        {
+            var propertyExpressions = selectItems.Select(item => 
+                    CreatePropertyOrFieldExpressionFromPath(item.PropertyPath, parameter)
+                ).ToArray();
+
+            throw new NotImplementedException("Select expression building is not implemented yet.");
         }
 
         private Expression CreatePropertyOrFieldExpressionFromPath(string propertyPath, ParameterExpression parameter)
@@ -49,7 +66,7 @@ internal class ExpressionBuilder() : IExpressionBuilder
     }
 
     internal class PredicateBuilder<T>(ParameterExpression parameter)
-    {        
+    {
         public Expression<Func<T, bool>> BuildExpression(FilterExpression filterExpression)
         {
             if (filterExpression == null)
@@ -209,7 +226,7 @@ internal class ExpressionBuilder() : IExpressionBuilder
             }
 
             var needsConversion = valueType != propertyType;
-            if(needsConversion)
+            if (needsConversion)
             {
                 value = Convert.ChangeType(value, propertyType);
             }
@@ -220,7 +237,7 @@ internal class ExpressionBuilder() : IExpressionBuilder
         internal static object GetInValues(Expression property, object value)
         {
             var valueType = value.GetType();
-            if(!valueType.IsCollection())
+            if (!valueType.IsCollection())
             {
                 throw new InvalidOperationException("Value for 'In' operator must be a collection.");
             }
@@ -274,4 +291,4 @@ internal class ExpressionBuilder() : IExpressionBuilder
 
     }
 
-}
+

@@ -22,4 +22,6 @@ public interface IODataParser
     /// <param name="orderByString">The OData orderby string.</param>
     /// <returns>The parsed LINQ expressions.</returns>
     OrderByExpression<T>[] ParseOrderBy<T>(string orderByString);
+    
+    Expression<Func<T, dynamic>> ParseSelect<T>(string select);
 }

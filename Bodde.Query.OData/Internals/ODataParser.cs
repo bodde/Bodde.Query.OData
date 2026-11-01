@@ -33,6 +33,16 @@ internal class ODataParser(IExpressionBuilder expressionBuilder) : IODataParser
         return orderByExpressions;
     }
 
+    public Expression<Func<T, dynamic>> ParseSelect<T>(string select)
+    {
+        var parser = new SelectParser();
+        var selectItems = parser.Parse(select);
+
+        Expression<Func<T, dynamic>> selectExpression = expressionBuilder.BuildSelect<T>(selectItems);
+
+        return selectExpression;
+    }
+
     internal class FilterParser
     {
         internal FilterExpression Parse(string filter)
@@ -413,4 +423,28 @@ internal class ODataParser(IExpressionBuilder expressionBuilder) : IODataParser
 
     internal record OrderByItem(string PropertyPath, bool IsDescending);
 
+    internal class SelectParser
+    {
+        public SelectItem[] Parse(string selectString)
+        {
+            if (selectString == null)
+                throw new ArgumentNullException(nameof(selectString));
+
+            var selectItems = selectString.FromCsv(ParseSelectItem, removeEmpty: false);
+
+            return selectItems;
+        }
+
+        private SelectItem ParseSelectItem(string itemString)
+        {
+            var propertyPath = itemString.Trim();
+
+            return new SelectItem(
+                PropertyPath: propertyPath
+            );
+        }
+    }
+
 }
+
+internal record SelectItem(string PropertyPath);    // TODO add alias

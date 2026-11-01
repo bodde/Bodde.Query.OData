@@ -18,12 +18,16 @@ public record ODataCriteria(
 {
     public override string ToString()
     {
-        var tokens = new List<string>();
-        if(Filter is not null) tokens.Add(String.Concat("$filter=", Filter));
-        if(OrderBy is not null) tokens.Add(String.Concat("$orderby=", OrderBy));
-        if(Skip is not null) tokens.Add(String.Concat("$skip=", Skip.ToString()));
-        if(Top is not null) tokens.Add(String.Concat("$top=", Top.ToString()));
+        return ToStringTokens().ToCsv("&");
+    }
 
-        return tokens.ToCsv("&");
+    protected List<string> ToStringTokens()
+    {
+        var tokens = new List<string>();
+        if (Filter is not null) tokens.Add(String.Concat("$filter=", Filter));
+        if (OrderBy is not null) tokens.Add(String.Concat("$orderby=", OrderBy));
+        if (Skip is not null) tokens.Add(String.Concat("$skip=", Skip.ToString()));
+        if (Top is not null) tokens.Add(String.Concat("$top=", Top.ToString()));
+        return tokens;
     }
 }

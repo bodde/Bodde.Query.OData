@@ -1,4 +1,5 @@
-﻿using Bodde.Query.OData.Internals;
+﻿using System.Linq.Expressions;
+using Bodde.Query.OData.Internals;
 
 namespace Bodde.Query.OData;
 
@@ -61,6 +62,16 @@ public static class QueryableExtensions
         }
 
         return queryable;
+    }
+
+    public static IQueryable<dynamic> Apply<T>(this IQueryable<T> queryable, ODataSelectCriteria criteria, IODataParser? parser = null)
+    {
+        parser ??= new ODataParser(new ExpressionBuilder());
+
+        queryable = queryable.Apply(criteria as ODataCriteria, parser);
+
+        Expression<Func<T, dynamic>> selectExpression = parser.ParseSelect<T>(criteria.Select);
+        return queryable.Select(selectExpression);
     }
 }
 
