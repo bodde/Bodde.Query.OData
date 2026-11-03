@@ -1,6 +1,8 @@
 ﻿using Samples.Common;
 using Samples.Common.EFCore;
 using Microsoft.EntityFrameworkCore;
+using Bodde.Query.OData;
+using Bodde.Common.Extensions;
 
 
 using var ctx = new CompanyDbContext();
@@ -14,3 +16,11 @@ await testExecutor.ExecuteAsync(
     countAsync: query => query.CountAsync(), 
     output: text => Console.WriteLine(text)
     );
+
+var result = ctx.Employees.Apply(new ODataSelectCriteria(
+    Select:"Name, Salary", 
+    Skip: 0, 
+    Top: 10
+    )).ToArray();
+
+Console.WriteLine(result.ToCsv(_ => $"{_.Name} ({_.Salary})"));
