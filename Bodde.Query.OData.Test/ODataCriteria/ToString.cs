@@ -1,7 +1,7 @@
 
 using Sut = Bodde.Query.OData.ODataCriteria;
 
-namespace ODataCriteria;
+namespace ODataCriteriaTests;
 
 public class ToString
 {

@@ -53,9 +53,20 @@ public class Apply
     [InlineData("Id ge 2", "Id desc", 3, 5, "7,6,5,4,3")]
     public void Sunny(string? filter, string? orderby, int? skip, int? top, string expectedCsv)
     {
-        var result = data.Apply(new(filter, orderby, skip, top)).ToArray()!;
+        var result = data.Apply(new ODataCriteria(filter, orderby, skip, top)).ToArray()!;
 
         var actualCsv = result.ToCsv(_ => _.Id.ToString());
+
+        Assert.Equal(expectedCsv, actualCsv);
+    }
+
+    [Theory]
+    [InlineData("FirstName", null, null, null, 1, "Emma")]
+    public void Select_Sunny(string select, string? filter, string? orderby, int? skip, int? top, string expectedCsv)
+    {
+        var result = data.Apply(new ODataSelectCriteria(select, filter, orderby, skip, top)).ToArray()!;
+
+        var actualCsv = result.ToCsv(_ => _.FirstName);
 
         Assert.Equal(expectedCsv, actualCsv);
     }
@@ -76,7 +87,7 @@ public class Apply
     [InlineData("Id eq 1 gt 2", "Unable to create top-level expression from filter string.")]
     public void InvalidFilter_FormatException(string filter, string expectedMessage)
     {
-        var actual = Assert.Throws<FormatException>(() => data.Apply(new(filter)));
+        var actual = Assert.Throws<FormatException>(() => data.Apply(new ODataCriteria(filter)));
 
         Assert.Equal(expectedMessage, actual.Message);
     }

@@ -38,7 +38,7 @@ internal class ODataParser(IExpressionBuilder expressionBuilder) : IODataParser
         var parser = new SelectParser();
         var selectItems = parser.Parse(select);
 
-        Expression<Func<T, dynamic>> selectExpression = expressionBuilder.BuildSelect<T>(selectItems);
+        Expression<Func<T, dynamic>> selectExpression = expressionBuilder.BuildSelectedType<T>(selectItems);
 
         return selectExpression;
     }

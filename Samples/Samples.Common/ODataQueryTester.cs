@@ -60,7 +60,7 @@ public class ODataQueryTester(IQueryable<Employee> employees)
             var totalCount = items.Length;
             if(criteria.Top.HasValue || criteria.Skip.HasValue)
             {
-                query = employees.Apply(new(criteria.Filter));
+                query = employees.Apply(new ODataCriteria(criteria.Filter));
                 totalCount = count(query);
             }
 
@@ -81,7 +81,7 @@ public class ODataQueryTester(IQueryable<Employee> employees)
             var totalCount = items.Length;
             if(criteria.Top.HasValue || criteria.Skip.HasValue)
             {
-                query = employees.Apply(new(criteria.Filter));
+                query = employees.Apply(new ODataCriteria(criteria.Filter));
                 totalCount = await countAsync(query);
             }
 

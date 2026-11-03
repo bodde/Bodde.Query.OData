@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Dynamic;
 using System.Linq.Expressions;
 using System.Reflection;
 using Bodde.Common.Extensions;
@@ -24,7 +25,7 @@ internal class ExpressionBuilder() : IExpressionBuilder
         return predicateBuilder.BuildExpression(filterExpression);
     }
 
-    public Expression<Func<T, dynamic>> BuildSelect<T>(SelectItem[] selectItems)
+    public Expression<Func<T, dynamic>> BuildSelectedType<T>(SelectItem[] selectItems)
     {
         var parameter = Expression.Parameter(typeof(T));
         var selectBuilder = new SelectorBuilder<T>(parameter);
@@ -32,40 +33,72 @@ internal class ExpressionBuilder() : IExpressionBuilder
         return selectBuilder.BuildExpression(selectItems);
     }
 
-    internal class SelectorBuilder<T>(ParameterExpression parameter)
+    internal abstract class ExpressionBuilderBase(ParameterExpression parameter)
     {
-        internal Expression<Func<T, object?>> BuildExpression(string propertyPath)
-        {
-            var propertyPathExpression = CreatePropertyOrFieldExpressionFromPath(propertyPath, parameter);
-            var converted = Expression.Convert(propertyPathExpression, typeof(object));
+        protected ParameterExpression Parameter => parameter;
 
-            return Expression.Lambda<Func<T, object?>>(converted, parameter);
-        }
 
-        internal Expression<Func<T, dynamic>> BuildExpression(SelectItem[] selectItems)
-        {
-            var propertyExpressions = selectItems.Select(item => 
-                    CreatePropertyOrFieldExpressionFromPath(item.PropertyPath, parameter)
-                ).ToArray();
-
-            throw new NotImplementedException("Select expression building is not implemented yet.");
-        }
-
-        private Expression CreatePropertyOrFieldExpressionFromPath(string propertyPath, ParameterExpression parameter)
+        protected MemberExpression CreateMemberExpressionFromPath(string propertyPath)
         {
             var properties = propertyPath.Tokenize('.');
-
-            Expression currentExpression = parameter;
-            foreach (var propertyName in properties)
+            if(properties.Length == 0)
             {
-                currentExpression = Expression.PropertyOrField(currentExpression, propertyName);
+                throw new InvalidOperationException("Property path cannot be empty.");
+            }   
+            var firstPropertyName = properties.First();
+            var nextPropertyNames = properties.Skip(1).ToArray();
+
+            var currentExpression = Expression.PropertyOrField(Parameter, firstPropertyName);
+            foreach (var nextPropertyName in nextPropertyNames)
+            {
+                currentExpression = Expression.PropertyOrField(currentExpression, nextPropertyName);
             }
 
             return currentExpression;
         }
     }
 
-    internal class PredicateBuilder<T>(ParameterExpression parameter)
+    internal class SelectorBuilder<T>(ParameterExpression parameter) : ExpressionBuilderBase(parameter)
+    {
+        internal Expression<Func<T, object?>> BuildExpression(string propertyPath)
+        {
+            var propertyPathExpression = CreateMemberExpressionFromPath(propertyPath);
+            var converted = Expression.Convert(propertyPathExpression, typeof(object));
+
+            return Expression.Lambda<Func<T, object?>>(converted, Parameter);
+        }
+
+        internal Expression<Func<T, dynamic>> BuildExpression(SelectItem[] selectItems)
+        {
+            var propertyExpressions = selectItems
+                .Select(selectItem => CreateMemberExpressionFromPath(selectItem.PropertyPath))
+                .ToArray();
+
+            // expression that creates expando object with the selected properties
+            var newExpandoExpression = Expression.New(typeof(ExpandoObject));
+            var addPropertyMethod = typeof(IDictionary<string, object>).GetMethod("Add")!;
+            var initPropertyExpressions = propertyExpressions
+                .Select(propertyExpression => CreateAddPropertyExpression(propertyExpression, addPropertyMethod))
+                .ToArray();
+
+            var initExpandoExpression = Expression.ListInit(newExpandoExpression, initPropertyExpressions);
+            var convertedExpandoExpression = Expression.Convert(initExpandoExpression, typeof(object));
+
+            return Expression.Lambda<Func<T, dynamic>>(convertedExpandoExpression, Parameter);
+        }
+
+
+        private static ElementInit CreateAddPropertyExpression(MemberExpression pe, MethodInfo addPropertyMethod)
+        {
+            return Expression.ElementInit(
+                                addPropertyMethod,
+                                Expression.Constant(pe.Member.Name),
+                                Expression.Convert(pe, typeof(object))
+                            );
+        }
+    }
+
+    internal class PredicateBuilder<T>(ParameterExpression parameter) : ExpressionBuilderBase(parameter)
     {
         public Expression<Func<T, bool>> BuildExpression(FilterExpression filterExpression)
         {
@@ -105,20 +138,20 @@ internal class ExpressionBuilder() : IExpressionBuilder
                     };
             }
 
-            var lambda = Expression.Lambda<Func<T, bool>>(combinedBody!, parameter);
+            var lambda = Expression.Lambda<Func<T, bool>>(combinedBody!, Parameter);
 
             return lambda;
         }
 
         private Expression<Func<T, bool>> CreateComparisonExpression(ComparisonExpression comparisonExpression)
         {
-            var property = CreatePropertyOrFieldExpressionFromPath(comparisonExpression.PropertyPath, parameter);
+            var property = CreateMemberExpressionFromPath(comparisonExpression.PropertyPath);
             var constant = CreateConstantExpression(comparisonExpression, property);
 
             ValidateOperatorOrThrow(comparisonExpression, property);
 
             var operatorExpression = CreateOperatorExpression(comparisonExpression, property, constant);
-            var lambda = Expression.Lambda<Func<T, bool>>(operatorExpression, parameter);
+            var lambda = Expression.Lambda<Func<T, bool>>(operatorExpression, Parameter);
 
             return lambda;
         }
@@ -126,7 +159,7 @@ internal class ExpressionBuilder() : IExpressionBuilder
         private Expression<Func<T, bool>> CreateNotExpression(NotExpression notExpression)
         {
             var expressionLambda = BuildExpression(notExpression.Expression);
-            var lambda = Expression.Lambda<Func<T, bool>>(Expression.Not(expressionLambda.Body), parameter);
+            var lambda = Expression.Lambda<Func<T, bool>>(Expression.Not(expressionLambda.Body), Parameter);
 
             return lambda;
         }
@@ -270,25 +303,12 @@ internal class ExpressionBuilder() : IExpressionBuilder
             return listInstance;
         }
 
-        private Expression CreatePropertyOrFieldExpressionFromPath(string propertyPath, ParameterExpression parameter)
-        {
-            var currentExpression = parameter as Expression;
-            var properties = propertyPath.Split('.');
-
-            foreach (var propertyName in properties)
-            {
-                currentExpression = Expression.PropertyOrField(currentExpression, propertyName);
-            }
-
-            return currentExpression;
-        }
-
         private MethodInfo GetStringMethodInfo(string methodName)
         {
             var arguments = new[] { typeof(string) };
             return typeof(string).GetMethod(methodName, arguments)!;
         }
-
     }
+}
 
 
