@@ -3,6 +3,9 @@
 
 # Add select feature
 - [ ] ApplySelect extension method 
+  - [x] Draft a working solution using dynamic and ExpandoObject
+  - [x] Test with EFCore
+  - [ ] Flatten property paths
 - [ ] Add aliases to select clause
 - [ ] Add distinct to select clause
 
